@@ -8,4 +8,4 @@ services:
       - 4000:4000                   # default - port 4000 (local) to port 4000 (container)
       - 35729:35729                 # Jekyll 3.70+ live reload feature
     volumes:
-      - $(pwd):/srv/jekyll
+      - ${PWD}:/srv/jekyll
