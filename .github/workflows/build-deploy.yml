@@ -45,7 +45,7 @@ jobs:
           ${{ runner.os }}-gems-
 
     - name: Build with Jekyll
-      run: bundle exec jekyll build -d
+      run: bundle exec jekyll build
       env:
         JEKYLL_ENV: "production"
     
