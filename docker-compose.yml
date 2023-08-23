@@ -1,0 +1,11 @@
+# This docker-compose file sets up a jekyll development environment; the secondary port allows for live-reload to aid development
+
+services:
+  jekyll:
+    image: jekyll/jekyll:latest
+    command: jekyll serve --livereload
+    ports:
+      - 4000:4000                   # default - port 4000 (local) to port 4000 (container)
+      - 35729:35729                 # Jekyll 3.70+ live reload feature
+    volumes:
+      - $(pwd):/srv/jekyll
