@@ -58,7 +58,7 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
         ARGS: "-rzv --delete --delete-excluded --chmod=g+rwx"
-        SOURCE: "/home/runner/work/chase-blog/chase-blog/_site"
+        SOURCE: "_site/"
         REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
         REMOTE_USER: ${{ secrets.REMOTE_USER }}
         TARGET: ${{ secrets.REMOTE_TARGET }}
