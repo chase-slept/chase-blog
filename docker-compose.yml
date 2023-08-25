@@ -3,7 +3,7 @@
 services:
   jekyll:
     image: jekyll/jekyll:latest
-    command: jekyll serve --livereload
+    command: jekyll serve --livereload --drafts  #drafts flag for testing
     ports:
       - 4000:4000                   # default - port 4000 (local) to port 4000 (container)
       - 35729:35729                 # Jekyll 3.70+ live reload feature
