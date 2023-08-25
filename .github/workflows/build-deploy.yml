@@ -54,7 +54,7 @@ jobs:
         bundle exec htmlproofer _site --disable-external --check-html --allow_hash_href
 
     - name: Deploy to Server
-      uses: easingthemes/ssh-deploy@v2.1.1
+      uses: easingthemes/ssh-deploy@v4.1.8
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
         ARGS: "-rzv --delete --delete-excluded --chmod=g+rwx"
