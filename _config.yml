@@ -20,7 +20,7 @@ timezone: "America/Chicago"
 
 title: Slept Dev Blog # the main title
 
-tagline: A place for thoughts, ideas, musings, and documentation. # it will display as the sub-title
+tagline: A place for thoughts, ideas and documentation. # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
   A modest blog to document my learning and development journey.
@@ -76,7 +76,7 @@ theme_mode: dark # [light|dark]
 img_cdn:
 
 # the avatar on sidebar, support local or CORS resources
-avatar:
+avatar: https://avatars.githubusercontent.com/u/104919406?s=400&u=f389c68fbb45770288784699d2ea61e4b6ce3709&v=4
 
 # boolean type, the global switch for TOC in posts.
 toc: true
