@@ -20,7 +20,7 @@ timezone: America/Chicago
 
 title: Slept # the main title
 
-tagline: Cloud and Devops Aspirant | Lifelong Learner | Homelab'r  # it will display as the sub-title
+tagline: Cloud Aspirant | DevOps | Lifelong Learner | Homelab'r  # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
   Slept - Documentation and Reflection
