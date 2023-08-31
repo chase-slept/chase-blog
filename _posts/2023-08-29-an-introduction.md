@@ -1,7 +1,6 @@
 ---
-layout: post
 title: An Introduction
-date: 2023-08-29 10:30
+date: 2023-08-29 10:30:00 -0500
 category: 
 author: Chase Neveu
 tags: []
