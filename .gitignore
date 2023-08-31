@@ -20,3 +20,10 @@ package-lock.json
 
 # Misc
 assets/js/dist
+
+#jekyll-post extension
+.post-template
+
+_drafts
+chirpy-starter-README.md
+LICENSE
