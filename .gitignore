@@ -24,6 +24,7 @@ assets/js/dist
 #jekyll-post extension
 .post-template
 
+_archive
 _drafts
 chirpy-starter-README.md
 LICENSE
