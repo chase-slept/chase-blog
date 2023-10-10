@@ -4,7 +4,7 @@ title: Accessing local resources remotely
 category: 
 tags: []
 ---
-In [my last post]({% post_url 2023-09-20-network-topology %}) I briefly discussed the network topology of my homelab and a bit about its creation. Today I'd like to expand on that and explore some of the steps I took to access those local network resources over the internet. This was one of my first big self-taught hurdles, and required quite a bit of research and tinkering to figure out. As with the last post, this isn't so much a guide as a post-mortem---please keep that in mind.
+In [my last post]({% post_url 2023-09-20-network-topology %}) I briefly discussed the network topology of my homelab and a bit about its creation. Today I'd like to expand on that and explore some of the steps I took to access my local network resources over the internet. This was one of my first big self-taught hurdles, and required quite a bit of research and tinkering to figure out. As with the last post, this isn't so much a guide as post-mortem documentation---please keep that in mind.
 
 ![Diagram showing Network Topology](/assets/img/network-diagram.jpg)
 *Network diagram from [my previous post]({% post_url 2023-09-20-network-topology %}).*
@@ -57,25 +57,31 @@ Once these changes become active on your domain name, its DNS settings should be
 
 ![image of CF UI with DNS records]()
 
-With these records added and our domain pointing to where it needs to, we're *almost* ready to create our tunnels. There are a few things we need to check on our VPS before we continue.
+With these records added, our domain is now pointing to where it needs to and we're ready to create our tunnels. We'll start by setting up the Cloudflare Tunnel in the next section, including SSH via Cloudflare Access. Once that is working, we'll move on to setting up the Wireguard tunnel and reverse proxy.
 
 <!-- can revise later to remove VPS section -- IPV4 forwarding can be added as a preroute in WG conf; iptables can be added 
 
 ### Configure VPS
 
 To start, we need to enable IP forwarding. This allows incoming traffic from one network interface to be passed to a different network interface and forwarded along that route. This is exactly what we're trying to accomplish with incoming traffic on our server---routing from the default interface to our planned Wireguard interface. Follow the [instructions here](https://openvpn.net/faq/what-is-and-how-do-i-enable-ip-forwarding-on-linux/); we need to edit the sysctl.conf file and uncomment (or add) the line that references ipv4 IP forwarding. Once these changes are saved, we need to configure our tunnels and then set up our firewall rules. (*Note: you could substitute [proper networking via iptables/nftables](https://www.procustodibus.com/blog/2021/04/wireguard-access-control-with-iptables/) here; I'm not great at networking yet and my network is relatively simple, so [we'll use Ubuntu's UFW](https://www.procustodibus.com/blog/2021/05/wireguard-ufw/) when we come to this section later.*)
-
 -->
-### Configure Tunnels
 
-Set up WG on router
-Set up WG on VPS  -- add links back to WG docs for gen keys, etc.
-Set up Cloudflared docker container -- expose  docker network
-Create static route on router for both tunnel interfaces
+### Configure Cloudflare Tunnel
+
+To begin, we'll create the local endpoint for our tunnel by using a docker container. We'll follow the instructions provided by Cloudflare, with a few changes I'll note as we come to them.
+
+- Set up Cloudflared docker container -- expose  docker network by:
+- Create static route on router for (both) tunnel interfaces
+- Set up Cloudflare ZeroTrust Access SSH
+- Set up WG on router
+- Set up WG on VPS  -- add links back to WG docs for gen keys, etc.
+- (Static Route 2)
 
 ### Set up SSH
 
-Set up Cloudflare ZeroTrust Access SSH
+### Configure Wireguard (Router)
+
+### Configure Wireguard Tunnel
 
 ### Configure Reverse Proxy
 
