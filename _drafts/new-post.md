@@ -53,13 +53,13 @@ Our first task is to set up a domain name. Assuming you already have one, you'll
 
 ![The DNS section in the Cloudflare UI](/assets/)
 
-Once these changes become active on your domain name, its DNS settings should become editable within the Cloudflare UI. From here, we'll be adding A/CNAME records which will control where the domain and subdomains point. Our first will be the A record, which we'll be pointing to the static IP address of our VPS (or cloud server). For the CNAME records, you can choose any names you'd like; I'll keep it simple and name them after the services they'll be pointing to. Services might include things like: blog, plex, dashboard, logs, email, calibre, portainer, etc., and they should point to the same IP as our A record (an @ symbol can be used as an alias for your A record). We'll be relying on a reverse proxy to sort out this traffic for us later---for now, all we need to do is set up the subdomains we want and make sure they're being sent to the VPS. Here's an example:
+Once these changes become active on your domain name, its DNS settings should become editable within the Cloudflare UI. From here, we'll be adding A/CNAME records which will control where the domain and subdomains point. Our first will be the A record, which we'll be pointing to the static IP address of our VPS (or cloud server). For the CNAME records, you can choose any names you'd like; I'll keep it simple and name them after the services they'll be pointing to. This might include things like: blog, plex, dashboard, logs, email, calibre, portainer, etc., and they should point to the same IP as our A record (an @ symbol can be used as an alias for your A record). We'll be relying on a reverse proxy to sort out this traffic for us later---for now, all we need to do is set up the subdomains we want and make sure they're being sent to the VPS. Here's an example:
 
 ![image of CF UI with DNS records]()
 
 With these records added, our domain is now pointing to where it needs to and we're ready to create our tunnels. We'll start by setting up the Cloudflare Tunnel in the next section, including SSH via Cloudflare Access. Once that is working, we'll move on to setting up the Wireguard tunnel and reverse proxy.
 
-<!-- can revise later to remove VPS section -- IPV4 forwarding can be added as a preroute in WG conf; iptables can be added 
+<!-- can revise later to remove VPS section -- IPV4 forwarding can be added as a preroute in WG conf; iptables can be added the same way
 
 ### Configure VPS
 
@@ -68,7 +68,31 @@ To start, we need to enable IP forwarding. This allows incoming traffic from one
 
 ### Configure Cloudflare Tunnel
 
-To begin, we'll create the local endpoint for our tunnel by using a docker container. We'll follow the instructions provided by Cloudflare, with a few changes I'll note as we come to them.
+To begin, we'll create the local endpoint for our tunnel by using a docker container. [We'll follow the instructions provided by Cloudflare.](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/) You can follow docker instructions or modify them to suit your needs. I setup my connector in a docker container using a compose file like the one below:
+
+{% highlight yaml linenos %}
+version: 3.9
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    networks:
+      - proxy
+    command: tunnel run --token <TOKEN_UUID> #Replace <TOKEN_UUID> with your UUID (even better, [use secrets](https://docs.docker.com/compose/use-secrets/))
+    volumes:
+      - /path/to/local/config/:/path/to/container/files/
+networks:   # I'm using an existing user-defined bridge as a network; [easier networking this way](https://docs.docker.com/network/drivers/bridge/#differences-between-user-defined-bridges-and-the-default-bridge)
+  proxy:
+    driver: bridge
+    external: true
+{% endhighlight %}
+Once you've successfully configured the connector, it should appear in the Cloudflare ZeroTrust dashboard. On the next page, select **Public Hostnames** and click the *add a public hostname* button. From here you can choose a subdomain name and input the local IP address/port of any HTML service/app you'd like to access via that subdomain. Something like *portainer.example.com* pointing to *http://localhost:9000*.
+
+![example of settings](/assets/img/)
+*Make sure http/https matches your local network!*
+
+You'll need to create a static route on the VPS/cloud server to route to the docker network your tunnel lives on, but if you only have simple HTML apps you could stop there and essentially be done! To set up SSH through this secure tunnel, we'll need to make a more changes on the Cloudflare dashboard.
 
 - Set up Cloudflared docker container -- expose  docker network by:
 - Create static route on router for (both) tunnel interfaces
@@ -84,8 +108,6 @@ To begin, we'll create the local endpoint for our tunnel by using a docker conta
 ### Configure Wireguard Tunnel
 
 ### Configure Reverse Proxy
-
-Configure Caddy
 
 <!--
 
