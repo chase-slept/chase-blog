@@ -68,7 +68,7 @@ To start, we need to enable IP forwarding. This allows incoming traffic from one
 
 ### Configure Cloudflare Tunnel
 
-To begin, we'll create the local endpoint for our tunnel by using a docker container. [We'll follow the instructions provided by Cloudflare.](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/) You can follow docker instructions or modify them to suit your needs. I setup my connector in a docker container using a compose file like the one below:
+To begin, we'll create the local endpoint for our tunnel by using a Docker container. [We'll follow the instructions provided by Cloudflare.](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/) You can follow the Docker instructions or modify them to suit your needs. I setup my connector in a Docker container using a compose file like the one below:
 
 {% highlight yaml linenos %}
 version: 3.9
@@ -90,12 +90,12 @@ networks:   # I'm using an existing user-defined bridge as a network; [easier ne
 Once you've successfully configured the connector, it should appear in the Cloudflare ZeroTrust dashboard. On the next page, select **Public Hostnames** and click the *add a public hostname* button. From here you can choose a subdomain name and input the local IP address/port of any HTML service/app you'd like to access via that subdomain. Something like *portainer.example.com* pointing to *http://localhost:9000*.
 
 ![example of settings](/assets/img/)
-*Make sure http/https matches your local network!*
+*Make sure http/https matches as it appears on your local network!*
 
-You'll need to create a static route on the VPS/cloud server to route to the docker network your tunnel lives on, but if you only have simple HTML apps you could stop there and essentially be done! To set up SSH through this secure tunnel, we'll need to make a more changes on the Cloudflare dashboard.
+If you only have simple HTML apps to expose, you could stop there and essentially be done! To set up SSH through this secure tunnel, we'll need to make a few more changes on the Cloudflare dashboard.
 
-- Set up Cloudflared docker container -- expose  docker network by:
-- Create static route on router for (both) tunnel interfaces
+- Set up Cloudflared Docker container -- expose  Docker network by:
+- Create static route on router for (WG) tunnel interface
 - Set up Cloudflare ZeroTrust Access SSH
 - Set up WG on router
 - Set up WG on VPS  -- add links back to WG docs for gen keys, etc.
@@ -124,7 +124,7 @@ The final step will be configuring SSH for any servers or devices. For me, this 
 -. Cloudflare account setup
 -. Cloudflare DNS
 - VPS security and forwarding
-- Cloudflared docker container
+- Cloudflared Docker container
 - Cloudflare Zero Trust / Access
   - ssh access
 - Reverse-proxy services with Caddy
