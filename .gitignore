@@ -25,5 +25,6 @@ assets/js/dist
 .post-template
 
 _archive
+_drafts
 chirpy-starter-README.md
 LICENSE
