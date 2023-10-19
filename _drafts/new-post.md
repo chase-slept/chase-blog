@@ -92,7 +92,11 @@ Once you've successfully configured the connector, it should appear in the Cloud
 ![example of settings](/assets/img/)
 *Make sure http/https matches as it appears on your local network!*
 
-If you only have simple HTML apps to expose, you could stop there and essentially be done! To set up SSH through this secure tunnel, we'll need to make a few more changes on the Cloudflare dashboard.
+If you only have simple HTML apps to expose, you could stop there and essentially be done! To set up SSH through this secure tunnel, we'll need to add another public hostname here. Choose a subdomain name again (I used device names: ssh-nas, ssh-erx, etc.), select ssh from the dropdown list, and enter the local IP for the device. The official documentation says you should add the port number as well if the device isn't the same as where the tunnel is installed, but I didn't find this made difference in my setup so left it off.
+
+Speaking of official documentation, you should [continue following along with the instructions](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/use-cases/ssh/#connect-to-ssh-server-with-cloudflared-access) after step 1, which we just completed. You'll need to install *cloudflared* on your client machine to connect through a terminal, otherwise you can skip this bit entirely by using a browser-rendered terminal interface---this option requires no additional setup, we just need to click a toggle in the upcoming section. I recommend configuring both!
+
+After setting this up, we'll move on to setting up basic authentication. We should still be in the **Access** section of the ZeroTrust dashboard; from here, select **Applications** and click the *Add an application* button.
 
 - Set up Cloudflared Docker container -- expose  Docker network by:
 - Create static route on router for (WG) tunnel interface
