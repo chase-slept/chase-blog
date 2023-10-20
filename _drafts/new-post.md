@@ -45,7 +45,7 @@ With all of these problems brainstormed and proper solutions planned out, it was
 
 ## Execute the Plan
 
-Some assumptions before we continue: devices are installed and configured, the local network is configured and functional, services are installed and configured--everything is 'working' locally. This took a couple weeks of tinkering in my case, as I had new and unfamiliar network equipment, makeshift servers, and even a Raspberry Pi to learn how to use and configure. Everyone has different network conditions so the intial setup will vary, but the goal here is for our home network to route traffic across our local devices/services without much trouble before moving on.
+Some assumptions before we continue: devices are installed and configured, the local network is configured and functional, services are installed and configured---everything is 'working' locally. This took a couple weeks of tinkering in my case, as I had new and unfamiliar network equipment, makeshift servers, and even a Raspberry Pi to learn how to use and configure. Everyone has different network conditions so the intial setup will vary, but the goal here is for our home network to route traffic across our local devices/services without much trouble before moving on. We'll add a few static routes as we set up our tunnel; how to accomplish this will probably depend upon your specific network equipment, but I'll provide some examples when we get there. Most of the routing on my network is handled by the Edgerouter X, but you could accomplish this in many different ways, including with most common name-brand routers.
 
 ### Configure Domain Name
 
@@ -68,7 +68,7 @@ To start, we need to enable IP forwarding. This allows incoming traffic from one
 
 ### Configure Cloudflare Tunnel
 
-To begin, we'll create the local endpoint for our tunnel by using a Docker container. [We'll follow the instructions provided by Cloudflare.](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/) You can follow the Docker instructions or modify them to suit your needs. I setup my connector in a Docker container using a compose file like the one below:
+To begin, we'll create the first endpoint for our Cloudflare Tunnel. We'll follow [the instructions provided by Cloudflare](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/) to install the connector utility, *cloudflared*; where and how you install it is up to you. For ease and simplicty, I decided to install it in a Docker container on my Raspberry Pi, which is where most of the containers on my network live. You can follow the Docker instructions as-is or modify them to better suit your needs. I setup my connector using a Docker Compose file like the one below:
 
 {% highlight yaml linenos %}
 version: 3.9
@@ -87,23 +87,30 @@ networks:   # I'm using an existing user-defined bridge as a network; [easier ne
     driver: bridge
     external: true
 {% endhighlight %}
-Once you've successfully configured the connector, it should appear in the Cloudflare ZeroTrust dashboard. On the next page, select **Public Hostnames** and click the *add a public hostname* button. From here you can choose a subdomain name and input the local IP address/port of any HTML service/app you'd like to access via that subdomain. Something like *portainer.example.com* pointing to *http://localhost:9000*.
+
+Once you've successfully configured the connector, it should appear in the Cloudflare ZeroTrust dashboard. On the next page, select **Public Hostnames** and click the **add a public hostname** button. From here you can choose a subdomain name and input the local IP address/port of any HTML service/app you'd like to access via that subdomain. Something like *portainer.example.com* pointing to *http://10.0.0.10:9000* or *http://localhost:9000*, just make sure it's pointing to the IP address exactly as it appears on your local network.
 
 ![example of settings](/assets/img/)
 *Make sure http/https matches as it appears on your local network!*
 
-If you only have simple HTML apps to expose, you could stop there and essentially be done! To set up SSH through this secure tunnel, we'll need to add another public hostname here. Choose a subdomain name again (I used device names: ssh-nas, ssh-erx, etc.), select ssh from the dropdown list, and enter the local IP for the device. The official documentation says you should add the port number as well if the device isn't the same as where the tunnel is installed, but I didn't find this made difference in my setup so left it off.
+If you only have simple HTML apps to expose, you could stop there and essentially be done! *(If your connector is in a Docker container, skip ahead to the static routing bit to ensure you can reach services outside of that isolated Docker network.)* To set up SSH through this secure tunnel, we'll need to add another public hostname here. Choose a subdomain name again (I used device names: ssh-nas, ssh-erx, etc.), select ssh from the dropdown list, and enter the local IP address for that device. The official documentation says you should also add the SSH port number (:22) if the device is different than where the tunnel is installed, but I left it off and had no problems. YMMV, and test accordingly.
 
-Speaking of official documentation, you should [continue following along with the instructions](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/use-cases/ssh/#connect-to-ssh-server-with-cloudflared-access) after step 1, which we just completed. You'll need to install *cloudflared* on your client machine to connect through a terminal, otherwise you can skip this bit entirely by using a browser-rendered terminal interface---this option requires no additional setup, we just need to click a toggle in the upcoming section. I recommend configuring both!
+Speaking of official documentation, you should [continue following along with the instructions](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/use-cases/ssh/#connect-to-ssh-server-with-cloudflared-access) after step 1, which we just completed. You'll need to install *cloudflared* on your client machine to connect through a terminal app, otherwise you can skip this bit entirely by using a browser-rendered terminal interface---this option requires no additional setup, we just need to click a toggle in the next section. I mostly use my MacBook Pro for remote work, so I set up *cloudflared* on there so I can SSH via iTerm. I recommend configuring both options; if you need emergency shell access you can use any web browser, even on a smartphone or tablet.
 
-After setting this up, we'll move on to setting up basic authentication. We should still be in the **Access** section of the ZeroTrust dashboard; from here, select **Applications** and click the *Add an application* button.
+After you've installed *cloudflared* (again), we'll continue on to setting up some basic authentication. We should still be in the **Access** section of the ZeroTrust dashboard; from here, select **Applications** and click the **Add an application** button, then select **Self-hosted**. Name your app here and choose a session duration, then a subdomain you want to add authentication to. For our purposes, the rest of the settings on this page can be left as-is.
+
+On the next page, we're going to create an [access policy](https://developers.cloudflare.com/cloudflare-one/policies/access/); choose a descriptive name for the policy ("Email Verification/2FA"), an action for if the rule conditions are satisfied ("Allow"), and choose a session duration. I used the default **Include** rule, chose "Emails" as the Selector, and entered my email address as a value. When anyone tries to access this subdomain via ssh, a browser window will prompt the user for an email address. If they enter an email on this include list, they'll be emailed a passcode which can be entered to start a 'session'. When the session duration expires, the user will need to supply a valid email and passcode again. If they enter an email that's not on the list, they'll be given the same message but no email will arrive. [Feel free to read up](https://developers.cloudflare.com/cloudflare-one/applications/configure-apps/self-hosted-apps/) on the other Selectors here, as well as the require and exclude rules and other options here.
+
+Last page and theres only one thing here we need to change: at the bottom of the page, enable SSH Browser Rendering. Notice that Browser Rendered VNC is also an option---cool! You may decide for yourself whether or not to turn on [automatic cloudflared authentication](https://developers.cloudflare.com/cloudflare-one/applications/non-http/#automatic-cloudflared-authentication). There are a lot of configuration options available here---I'm satisfied with simple 2FA via email, so let's move on. 
+
+![image example ](/assets/img/)
 
 - Set up Cloudflared Docker container -- expose  Docker network by:
-- Create static route on router for (WG) tunnel interface
+- Create static route on router for (CF) tunnel interface
 - Set up Cloudflare ZeroTrust Access SSH
 - Set up WG on router
 - Set up WG on VPS  -- add links back to WG docs for gen keys, etc.
-- (Static Route 2)
+- (Static Route 2, WG)
 
 ### Set up SSH
 
