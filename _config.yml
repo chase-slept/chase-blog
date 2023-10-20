@@ -23,7 +23,7 @@ title: Slept # the main title
 tagline: Cloud Aspirant | DevOps | Lifelong Learner | Homelab'r  # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
-  Slept - Documentation and Reflection
+  Slept - Project Documentation and Thoughts
 
 # fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
 url: "https://slept.dev"
