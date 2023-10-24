@@ -35,11 +35,7 @@ We can check for where a container's mount point is located in a number of ways.
 
 ![Screenshot example of Volumes section](/assets/img/)
 
-We can also find this path information from the CLI with:
-{% highlight shell %}
-    docker inspect container container_example
-{% endhighlight %}
-where *container_example* is the name the container. This should spit out a quite a bit of info about the container---we're looking for something like this:
+We can also find this path information from the CLI with `docker inspect container container_example`, where *container_example* is the name of our target container. This should spit out a quite a bit of info---we're looking for something like this:
 {% highlight console %}
     "HostConfig": {
                 "Binds": [
@@ -70,3 +66,4 @@ Once you've figured out where your existing container's data is located, you can
 
 ### Syncing the Two Volumes
 
+Lastly, we'll need to figure out a way to move our existing data from the old host to the new host. Our two containers should be identical in how they're installed, but the configuration and other important persistent data is still stuck on the old host. This is where `rsync` comes in. Maybe you're already familiar with it, but this command is used to sync data between sources, and is exactly what we're trying to accomplish here. You can do your own research on the available rsync arguments and parameters, but here are some of the crucial bits:
