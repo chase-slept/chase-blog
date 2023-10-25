@@ -33,7 +33,7 @@ We'll need to figure out where our container stores its persistent data---things
 
 We can check for where a container's mount point is located in a number of ways. If you use Portainer, this info can be found by navigating to your container list by selecting **Containers** from the menu, selecting your container from the list to view its details, and scrolling down to the **Volumes** section where the bind mount paths are listed.
 
-![Screenshot example of Volumes section](/assets/img/)
+![Screenshot example of Volumes section](/assets/img/volume-path-example.jpg)
 
 We can also find this path information from the CLI with `docker inspect container container_example`, where *container_example* is the name of our target container. This should spit out a quite a bit of info---we're looking for something like this:
 {% highlight console %}
@@ -66,4 +66,22 @@ Once you've figured out where your existing container's data is located, you can
 
 ### Syncing the Two Volumes
 
-Lastly, we'll need to figure out a way to move our existing data from the old host to the new host. Our two containers should be identical in how they're installed, but the configuration and other important persistent data is still stuck on the old host. This is where `rsync` comes in. Maybe you're already familiar with it, but this command is used to sync data between sources, and is exactly what we're trying to accomplish here. You can do your own research on the available rsync arguments and parameters, but here are some of the crucial bits:
+Lastly, we'll need to figure out a way to move our existing data from the old host to the new host. Our two containers should be identical in how they're installed, but the configuration and other important persistent data is still stuck on the old host. This is where `rsync` comes in. Maybe you're already familiar with it, but this command is used to sync data between sources, and is exactly what we're trying to accomplish here. You should check the rsync man page if you unsure of the arguments and parameters, but here are some of the crucial bits I ended up using:
+
+`rsync [options] /source /destination`
+
+- `--archive` (shorthand `-a`, essentially `-rlptgoD`) Recursively preserves links, permissions, times, group, owner, special files---basically, this syncs folder/file(s) in almost their exact state, preserving special properties and links, etc.
+- `--delete` This tells rsync to delete any files that already exist on the receiving side/destination. Essentially, this will allow our 'old' files to overwrite the default config files that were created when the new container was spun up.
+- `--dry-run` (`-n`) Adding this option will do a trial run and doesn't make any actual changes. Useful for testing.
+- `--compress` (`-z`) Compresses files before sending over the network. Probably not necessary but may be useful for slower connections.
+- `--progress --partial` (`-P`) This is useful for seeing the progress (like verbose, sorta) and keeps any partial files (such as when interrupted) to speed up their transfer later. Also not necessary, I just like the verbose output.
+
+The full command I ended up with looks like this:
+
+`sudo rsync -anzP --delete /data/compose/23/container_example/ root@10.42.69.10:/path/to/new/host/container_example`
+
+Looking at the full command, there are a few things worth noting. Use sudo if you're not the root user. It's a good idea to test for the correct behavior first by setting the `--dry-run` (`-n`) flag; remove this flag when you've confirmed things are working and you're ready to sync for real. The origin path should have a trailing slash, which tells rsync that the folder's **contents** should be transferred. Lastly, our remote destination is specified much like an SSH command, with a username@hostname:path format.
+
+After you've successfully ran this command and transferred your data from the old host, restart the Docker container on the new host and confirm your service works as expected. It should have all of your existing data and be working as it did on the old host. Congratulations! There may be other steps needed to migrate things like databases, but for simply moving configuration files and other persistent data, this method should do the trick.
+
+Hopefully this write-up has been useful for someone and, as always, thanks for reading!
