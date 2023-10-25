@@ -6,7 +6,7 @@ tags: [docker, homelab, guide]
 ---
 ## Migrating Docker Containers Between Hosts
 
-Inevitably, it seems, we'll encounter a situation where a Docker container isn't quite in the right place. In my case, I had a handful of containers running on an Ubuntu server and needed to move them to a different server on my network. 
+Inevitably, it seems, we'll encounter a situation where a Docker container isn't quite in the right place. In my case, I had a handful of containers running on an Ubuntu server and needed to move them to a different server on my network.
 
 ### Overview
 
