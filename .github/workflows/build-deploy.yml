@@ -65,9 +65,9 @@ jobs:
         SCRIPT_BEFORE: |
           whoami
           ls -al
-    # - name: Purge CDN / Cloudflare
-    #   name: Purge Cloudflare Cache
-    #   uses: jakejarvis/cloudflare-purge-action@v0.3.0
-    #   env:
-    #     CLOUDFLARE_ZONE: $
-    #     CLOUDFLARE_TOKEN: $
+          
+    - name: Purge CDN / Cloudflare
+      uses: jakejarvis/cloudflare-purge-action@v0.3.0
+      env:
+        CLOUDFLARE_ZONE: ${{ secrets.CF_ZONE }}
+        CLOUDFLARE_TOKEN: ${{ secrets.CF_TOKEN }}
