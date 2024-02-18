@@ -63,8 +63,8 @@ jobs:
         REMOTE_USER: ${{ secrets.REMOTE_USER }}
         TARGET: ${{ secrets.REMOTE_TARGET }}
         SCRIPT_BEFORE: |
-        whoami
-        ls -al
+          whoami
+          ls -al
     # - name: Purge CDN / Cloudflare
     #   name: Purge Cloudflare Cache
     #   uses: jakejarvis/cloudflare-purge-action@v0.3.0
