@@ -53,8 +53,8 @@ jobs:
       run: |
         bundle exec htmlproofer _site --disable-external --check-html --allow_hash_href
 
-    - name: Deploy to Server
-      uses: easingthemes/ssh-deploy@v4.1.8
+    - name: Deploy to Remote Server
+      uses: easingthemes/ssh-deploy@main
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
         ARGS: "-rzv --delete --delete-excluded --chmod=g+rwx"
@@ -62,8 +62,10 @@ jobs:
         REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
         REMOTE_USER: ${{ secrets.REMOTE_USER }}
         TARGET: ${{ secrets.REMOTE_TARGET }}
-
-      # - name: Purge CDN / Cloudflare
+        SCRIPT_BEFORE: |
+        whoami
+        ls -al
+    # - name: Purge CDN / Cloudflare
     #   name: Purge Cloudflare Cache
     #   uses: jakejarvis/cloudflare-purge-action@v0.3.0
     #   env:
