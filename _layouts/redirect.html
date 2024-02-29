@@ -2,17 +2,17 @@
 layout: page
 ---
 
- <html>
+ <html data-proofer-ignore>
  <head>
      <meta charset="utf-8"/>
      <meta http-equiv="refresh" content="1;url={{ page.redirect }}"/>
-     <link href="{{ page.redirect }}" data-proofer-ignore/>
+     <link href="{{ page.redirect }}"/>
      <script type="text/javascript">
              window.location.href = "{{ page.redirect }}"
      </script>
      <title>Page Redirection</title>
  </head>
  <body>
- If you are not redirected automatically, follow <a href='{{ page.redirect }}' data-proofer-ignore>this link</a>.
+ If you are not redirected automatically, follow <a href='{{ page.redirect }}'>this link</a>.
  </body>
  </html>
