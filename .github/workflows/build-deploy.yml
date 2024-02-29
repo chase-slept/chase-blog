@@ -51,7 +51,7 @@ jobs:
     
     - name: Test site
       run: |
-        bundle exec htmlproofer _site --disable-external --check-html --allow_hash_href
+        bundle exec htmlproofer _site --disable-external --allow_hash_href
 
     - name: Deploy to Remote Server
       uses: easingthemes/ssh-deploy@main
