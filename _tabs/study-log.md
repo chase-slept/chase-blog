@@ -1,6 +1,6 @@
 ---
 layout: redirect
 icon: fas   fa-book
-redirect: study.slept.dev
+redirect: [https://study.slept.dev]
 order: 5
 ---
