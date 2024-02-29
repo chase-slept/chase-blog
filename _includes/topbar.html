@@ -1,10 +1,7 @@
 <!-- The Top Bar -->
 
 <header id="topbar-wrapper" aria-label="Top Bar">
-    <div
-      id="topbar"
-      class="d-flex align-items-center justify-content-between px-lg-3 h-100"
-    >
+    <div id="topbar" class="d-flex align-items-center justify-content-between px-lg-3 h-100">
       <nav id="breadcrumb" aria-label="Breadcrumb">
         {% assign paths = page.url | split: '/' %}
   
@@ -48,7 +45,7 @@
   
       <div id="topbar-title">
         <!-- default {% if page.layout == 'home' %} -->
-        {% if page.url == '/' or page.url == site.baseurl %}
+        {% if page.url == '/' %}
           {{- site.data.locales[include.lang].title | default: site.title -}}
         {% elsif page.collection == 'tabs' or page.layout == 'page' %}
           {%- capture tab_key -%}{{ page.url | split: '/' }}{%- endcapture -%}
@@ -77,4 +74,4 @@
         {{- site.data.locales[include.lang].search.cancel -}}
       </button>
     </div>
-  </header>
+</header>
